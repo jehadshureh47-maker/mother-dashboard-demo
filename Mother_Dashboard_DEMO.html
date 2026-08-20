@@ -1846,18 +1846,29 @@ function ensureHeatmapModal(){
   document.addEventListener('keydown', (ev) => {
     if(ev.key === 'Escape' && overlay.classList.contains('open')) closeHeatmapDayDetail();
   });
+  overlay.addEventListener('keydown', (ev) => {
+    if(ev.key !== 'Tab' || !overlay.classList.contains('open')) return;
+    const focusables = overlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if(!focusables.length) return;
+    const first = focusables[0], last = focusables[focusables.length - 1];
+    if(ev.shiftKey && document.activeElement === first){ ev.preventDefault(); last.focus(); }
+    else if(!ev.shiftKey && document.activeElement === last){ ev.preventDefault(); first.focus(); }
+  });
   return overlay;
 }
 
 function closeHeatmapDayDetail(){
   const overlay = document.getElementById('hmModalOverlay');
   if(overlay) overlay.classList.remove('open');
+  if(_hmTriggerEl && typeof _hmTriggerEl.focus === 'function') _hmTriggerEl.focus();
+  _hmTriggerEl = null;
 }
 
 // Holds the currently-open heatmap day's breakdown so the Export CSV button
 // doesn't need to recompute it - set fresh each time showHeatmapDayDetail()
 // runs, read once by exportHeatmapDayDetail().
 let _hmModalData = null;
+let _hmTriggerEl = null;
 
 function exportHeatmapDayDetail(){
   if(!_hmModalData || !_hmModalData.rows.length) return;
@@ -1868,6 +1879,7 @@ function exportHeatmapDayDetail(){
 }
 
 function showHeatmapDayDetail(iso){
+  _hmTriggerEl = document.activeElement;
   const overlay = ensureHeatmapModal();
   const ids = (typeof OVERVIEW_REPORTS !== 'undefined' && OVERVIEW_REPORTS) ? OVERVIEW_REPORTS : [];
   const rows = [];
@@ -1906,6 +1918,8 @@ function showHeatmapDayDetail(iso){
       <div class="hm-modal-rows">${rowsHtml}</div>`;
   }
   overlay.classList.add('open');
+  const closeBtn = overlay.querySelector('.hm-modal-close');
+  if(closeBtn) closeBtn.focus();
 }
 
 // ---------- Data Quality tab ----------
