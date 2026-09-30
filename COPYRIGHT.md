@@ -2,7 +2,7 @@
 
 Copyright © 2026 Jehad Shureh. All rights reserved.
 
-The code in this repository (the Mother Dashboard demo and its related files:
+The code in this repository (the Dashboard demo and its related files:
 `index.html` and everything else in this repository) was authored by Jehad
 Shureh. The commit history of this repository is the dated record of that
 authorship.
